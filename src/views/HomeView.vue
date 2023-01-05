@@ -1,18 +1,42 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+    <div>
+        <div class="container-lg my-4 px-4 px-md-5 px-lg-0">
+            <div class="row g-4 g-lg-5 justify-content-center align-items-center">
+                <div class="col-md-6 col-lg-4" v-for="product in products" :key="product.id">
+                    <ProductCard :product="product" />
+                </div>
+            </div>
+        </div>
+    </div>
+   
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import ProductCard from '../components/ProductCard'
+
+import Product from '../apis/Product'
 
 export default {
-  name: 'HomeView',
-  components: {
-    HelloWorld
-  }
+    data(){
+        return {
+            products: [],
+        }
+    },
+    components: {
+        ProductCard,
+    },
+    async created(){
+        try {
+            const response  = await Product.getAllProduct();
+            this.products = response.data
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
 }
 </script>
+
+<style>
+
+</style>
