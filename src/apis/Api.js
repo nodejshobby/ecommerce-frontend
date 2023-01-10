@@ -7,17 +7,23 @@ const Api = axios.create({
     headers: { 'Accept': 'application/json' }
 });
 
-const token = localStorage.getItem('token')
 
-if(token){
-    Api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-}
+
+Api.interceptors.request.use(function(config){
+  const token = localStorage.getItem('token')
+
+  if(token){
+      config.headers.Authorization = `Bearer ${token}`
+  }
+
+  return config
+})
 
 Api.interceptors.response.use(function (response) {
     return response;
   }, function (error) {
    if(error.response.status === 401){
-    localStorage.removeItem(token)
+    localStorage.removeItem('token')
     store.dispatch('changeAuth', false)
     return router.push({ name: 'login' })
    }

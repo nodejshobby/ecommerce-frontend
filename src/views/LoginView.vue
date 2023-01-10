@@ -27,6 +27,10 @@
 
 <script>
 import Auth from '../apis/Auth'
+import Cart from '../apis/Cart'
+import CartLib from '../utils/Cart'
+
+
 import { mapActions } from 'vuex'
 export default {
     data(){
@@ -49,6 +53,11 @@ export default {
                     this.$toast.success("Login was successful",{position: "top-right"})
                     localStorage.setItem('token',response.data)
                     this.changeAuth(true)
+                    const localCart = CartLib.getCart()
+                    if(localCart.length > 0){
+                        await Cart.insertCart({'cart': localCart})
+                        localStorage.removeItem('cart')
+                    }
                     setTimeout(()=>{
                         this.$router.push({ name: 'home' })
                     },2000)

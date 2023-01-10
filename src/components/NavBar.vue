@@ -32,12 +32,32 @@
 import Auth from '../apis/Auth'
 import { mapState, mapActions } from 'vuex'
 import Cart from '../utils/Cart'
+import CartDb from '../apis/Cart'
+
 export default {
 name: "NavBar",
+data(){
+  return {
+    dbCount: ''
+  }
+},
+async created(){
+  try{
+    if (this.auth){
+      const response = await CartDb.getUserCartCount()
+      this.dbCount = response.data
+    }
+  }catch(error){
+    console.log(error)
+  }
+},
 computed: {
   ...mapState(['auth']),
   getCartCount(){
-    return Cart.getCartCount()
+    if(!this.auth){
+      return Cart.getCartCount()
+    }
+    return this.dbCount
   }
 },
 methods: {
@@ -45,6 +65,7 @@ methods: {
   async Logout(){
     try{
       await Auth.Logout()
+      localStorage.removeItem('token')
       this.changeAuth(false)
       this.$router.push({ name: "home" })
     }catch(error){
